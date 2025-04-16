@@ -52,31 +52,46 @@ int	erreur_init(t_game *game)
 	return (0);
 }
 
-int	count_horizontale(char **map)
+/*int	count_horizontale(t_game *game)
 {
 	int		i;
 
 	i = 0;
-	while (map[0][i] != '\n' && map[0][i] != '\0')
+	while (game->map[0][i] != '\n' && game->map[0][i] != '\0')
 		i++;
-	/*free(map[0]);*/
 	return (i);
 }
 
-int	count_verticale(char **map)
+int	count_verticale(t_game *game)
 {
 	int		x;
 
 	x = 0;
-	while (map[x])
-	{
+	while (game->map[0][x])
 		x++;
-		/*free(map[--x]);  pas sur mais tu connais brr brbrrbrr grrr pawwwwww !!!!*/
-	}
 	return (x);
+}*/
+
+int	verif_walls_cote(t_game *game)
+{
+	int	y;
+	int	x;
+
+	x = game->largeur_map - 1;
+	y = 0;
+	while (y < game->hauteur_map)
+	{
+		if (game->map[y][0] != '1' || game->map[y][x] != '1')
+		{
+			printf("probleme wall teco");
+			return (1);
+		}
+		y++;
+	}
+	return (0);
 }
 
-int	verif_map_c(char **map)
+int	verif_map_c(t_game *game)
 {
 	int	y;
 	int	count;
@@ -85,26 +100,26 @@ int	verif_map_c(char **map)
 	count = 0;
 	x = 0;
 	y = 0;
-	while (map[y])
+	while (game->map[y])
 	{
-		while (map[y][x])
+		x = 0;
+		while (x < game->largeur_map)
 		{
 			x++;
-			if (map[y][x] == 'C')
+			if (game->map[y][x] == 'C')
 				count++;
 		}
-		/*free(map[y]);*/
 		y++;
 	}
 	if (count <= 0)
 	{
-		printf("Erreur no exit");
+		printf("Erreur no collectible gros!!");
 		return (1);	
 	}
 	return (0);
 }
 
-int	verif_map_e(char **map)
+int	verif_map_e(t_game *game)
 {
 	int	y;
 	int	count;
@@ -113,15 +128,15 @@ int	verif_map_e(char **map)
 	count = 0;
 	x = 0;
 	y = 0;
-	while (map[y])
+	while (game->map[y])
 	{
-		while (map[y][x])
+		x = 0;
+		while (x < game->largeur_map)
 		{
 			x++;
-			if (map[y][x] == 'E')
+			if (game->map[y][x] == 'E')
 				count++;
 		}
-		/*free(map[y]);*/
 		y++;
 	}
 	if (count != 1)
@@ -132,51 +147,60 @@ int	verif_map_e(char **map)
 	return (0);
 }
 
-int	verif_walls_cote(char **map) /*verif les wall sur le teco*/
+int	verif_taille_lignes(t_game *game)
 {
 	int	y;
-	int	x;
+	int	taille;
 
-	x = count_horizontale(map) - 1;
 	y = 0;
-	while (map[y])
+	taille = ft_strlen(game->map[0]);
+	while (game->map[y])
 	{
-		if (map[y++][0] != '1' || map[y++][x] != '1')
+		if (taille != ft_strlen(game->map[y]))
+		{
+			printf("%s", "Pas la mm taille mgl");
 			return (1);
-		/*free(map[y]);*/
+		}
+		y++;
 	}
 	return (0);
 }
 
-int	verif_walls_haut(char **map) /*verif les wall sur le teco*/
+int	verif_walls_haut(t_game *game)
 {
 	int	y;
 	int	x;
 
-	y = count_verticale(map) - 1;
+	y = game->hauteur_map - 1;
 	x = 0;
-	while (map[0][x] == '1')
+	while (game->map[0][x] == '1')
 		x++;
-	if (x != count_horizontale(map))
+	if (x != game->largeur_map)
+	{
+		printf("%s", "Probleme de mur horizontal");
 		return (1);
+	}
 	x = 0;
-	while (map[y][x] == '1')
+	while (game->map[y][x] == '1')
 		x++;
-	if (x != count_horizontale(map))
+	if (x != game->largeur_map)
+	{
+		printf("%s", "Probleme de mur horizontal");
 		return (1);
+	}
 	return (0);
 }
 
-int	verif_rectangle(char **map)
+int	verif_rectangle(t_game *game)
 {
 	int	i;
 	int	o;
 
-	i = count_verticale(map);
-	o = count_horizontale(map);
+	i = game->hauteur_map;
+	o = game->largeur_map;
 	if (i == o)
 	{
-		printf("map pas rectangle gros !");
+		printf("map pas rectangulaire gros !");
 		return (1);	
 	}
 	return (0);
@@ -202,5 +226,26 @@ int	verif_name(t_game *game)
 	i++;
 	if (str[i] != 'r')
 		return (1);
+	return (0);
+}
+
+int	verif_all(t_game *game)
+{
+	if (verif_name(game) == 1)
+		return (1);
+	if (verif_rectangle(game) == 1)
+		return (1);
+	if (verif_walls_haut(game) == 1)
+		return (1);
+	if (verif_map_e(game) == 1)
+		return (1);
+	if (verif_map_c(game) == 1)
+		return (1);
+	if (verif_walls_cote(game) == 1)
+		return (1);
+	if (erreur_init(game) == 1)
+		return (1);
+	if (verif_taille_lignes(game) == 1)
+		return(1);
 	return (0);
 }

@@ -45,6 +45,8 @@ typedef struct s_game
 /*	int			level;*/
 } t_game;
 
+char	**alloc_map(int count);
+void	read_map_lines(int fd, char **map, t_game *game);
 int	count_collectible(char *ligne, t_game *game);
 void	collectible(t_game *game, int x, int y);
 char	**charger_carte(char *carte, t_game *game);
@@ -56,13 +58,13 @@ void	draw_background(t_game *game);
 int	erreur_init(t_game *game);
 void	init_var(t_game *game);
 int	count_char_map(const char *filename);
-int	count_horizontale(char **map);
-int	count_verticale(char **map);
-int	verif_map_c(char **map);
-int	verif_map_e(char **map);
-int	verif_walls_cote(char **map);
-int	verif_walls_haut(char **map);
-int	verif_rectangle(char **map);
+int	verif_map_c(t_game *game);
+int	verif_map_e(t_game *game);
+int	verif_walls_cote(t_game *game);
+int	verif_walls_haut(t_game *game);
+int	verif_rectangle(t_game *game);
 int	verif_name(t_game *game);
+int	verif_all(t_game *game);
+int	verif_taille_lignes(t_game *game);
 
 #endif

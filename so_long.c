@@ -52,13 +52,13 @@ int	count_char_map(const char *filename)
 	int		count;
 
 	count = 0;
-	i = 0;
 	fd = open(filename, O_RDONLY);
 	if (fd < 0)
 		return (1);
 	line = get_next_line(fd);
 	while (line)
 	{
+		i = 0;
 		while (line[i])
 		{
 			if (line[i] != '\n')
@@ -72,19 +72,78 @@ int	count_char_map(const char *filename)
 	return (count);
 }
 
+char	**alloc_map(int count)
+{
+	char **map;
+
+	map = malloc(sizeof(char *) * (count));
+	return (map);
+}
+
+void	read_map_lines(int fd, char **map, t_game *game)
+{
+	int		i;
+	char	*ligne;
+
+	i = 0;
+	ligne = get_next_line(fd);
+	if (!ligne)
+	{
+		free(map);
+		close(fd);
+	}
+	game->largeur_map = ft_strlen(ligne) - 1;
+	while (ligne)
+	{
+		map[i] = ligne;
+		i++;
+		count_collectible(ligne, game);
+		ligne = get_next_line(fd);
+	}
+	map[i] = NULL;
+	game->hauteur_map = i;
+	close(fd);
+}
+
 char	**charger_carte(char *carte, t_game *game)
 {
+	int		count;
+	int		fd;
+	char	**map;
+
+	count = count_char_map(carte);
+	if (count <= 0)
+		return (NULL);
+	map = alloc_map(count);
+	if (!map)
+		return (NULL);
+	fd = open(carte, O_RDONLY);
+	if (fd < 0)
+	{
+		free_map(map);
+		return (NULL);
+	}
+	read_map_lines(fd, map, game);
+	close(fd);
+	return (map);
+}
+
+
+/*char	**charger_carte(char *carte, t_game *game)
+{
 	int			i;
-	int			count = count_char_map(game->argv1);
+	int			count;
 	int			fd;
-	char	**map = malloc(sizeof(char*) * (count));
+	char	**map;
 	char		*ligne;
 
 	i = 0;
+	count = count_char_map(carte);
+	map = malloc(sizeof(char*) * (count));
 	fd = open(carte, O_RDONLY);
+	ligne = get_next_line(fd);
 	if (fd < 0 || !map)
 		return NULL;
-	ligne = get_next_line(fd);
 	if (!ligne)
 	{
 		free(map);
@@ -96,14 +155,14 @@ char	**charger_carte(char *carte, t_game *game)
 	{
 		map[i] = ligne;
 		i++;
-		count_collectible(ligne, game); /* on appelle la fonction pour compter les collectibles*/
+		count_collectible(ligne, game);
 		ligne = get_next_line(fd);
 	}
 	map[i] = NULL;
 	game->hauteur_map = i;
 	close(fd);
 	return (map);
-}
+}*/
 
 int	quitter(t_game *game)
 {
@@ -272,6 +331,8 @@ int main(int argc, char **argv)
 	game->map = charger_carte(argv[1], game);
 	if (!game->mlx || !game->map)
 		erreur_init(game);
+	if (verif_all(game) == 1)
+		return (0);
 	game->win = mlx_new_window(game->mlx, game->largeur_map * 64, game->hauteur_map * 64, "so_long");
 	charger_images(game);
 	draw_background(game);
