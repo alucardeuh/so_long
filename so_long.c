@@ -17,7 +17,7 @@
 int	count_collectible(char *ligne, t_game *game)
 {
 	int	j;
-	
+
 	j = 0;
 	while (ligne[j])
 	{
@@ -25,7 +25,7 @@ int	count_collectible(char *ligne, t_game *game)
 			game->t++;
 		j++;
 	}
-	return(game->t);
+	return (game->t);
 }
 
 void	free_map(char **map)
@@ -33,7 +33,7 @@ void	free_map(char **map)
 	int	i;
 
 	if (!map)
-		return;
+		return ;
 	i = 0;
 	while (map[i])
 	{
@@ -42,7 +42,6 @@ void	free_map(char **map)
 	}
 	free(map);
 }
-
 
 int	count_char_map(const char *filename)
 {
@@ -70,14 +69,6 @@ int	count_char_map(const char *filename)
 	}
 	close(fd);
 	return (count);
-}
-
-char	**alloc_map(int count)
-{
-	char **map;
-
-	map = malloc(sizeof(char *) * (count));
-	return (map);
 }
 
 void	read_map_lines(int fd, char **map, t_game *game)
@@ -114,7 +105,7 @@ char	**charger_carte(char *carte, t_game *game)
 	count = count_char_map(carte);
 	if (count <= 0)
 		return (NULL);
-	map = alloc_map(count);
+	map = malloc(sizeof(char *) * (count));
 	if (!map)
 		return (NULL);
 	fd = open(carte, O_RDONLY);
@@ -127,7 +118,6 @@ char	**charger_carte(char *carte, t_game *game)
 	close(fd);
 	return (map);
 }
-
 
 /*char	**charger_carte(char *carte, t_game *game)
 {
@@ -317,12 +307,13 @@ int	handle_key(int keycode, void *param)
 
 int main(int argc, char **argv)
 {
+	t_game	*game = malloc(sizeof(t_game));
+
 	if (argc != 2)
 	{
 		printf("ERREUR ARG GROS != 2");
 		return (1);
 	}
-	t_game *game = malloc(sizeof(t_game));
 	init_var(game);
 	game->argv1 = argv[1];
 	if (!game)
@@ -340,5 +331,5 @@ int main(int argc, char **argv)
 	mlx_hook(game->win, 17, 0, quitter, game);
 	mlx_loop(game->mlx);
 	free(game);
-	return (0);	
+	return (0);
 }

@@ -42,10 +42,8 @@ typedef struct s_game
 	int			t;
 	int			pos_x_exit;
 	int			pos_y_exit;
-/*	int			level;*/
 } t_game;
 
-char	**alloc_map(int count);
 void	read_map_lines(int fd, char **map, t_game *game);
 int	count_collectible(char *ligne, t_game *game);
 void	collectible(t_game *game, int x, int y);
@@ -66,5 +64,12 @@ int	verif_rectangle(t_game *game);
 int	verif_name(t_game *game);
 int	verif_all(t_game *game);
 int	verif_taille_lignes(t_game *game);
+int	verif_chemin(t_game *game);
+void	flood_fill(t_game *game, int x, int y);
+int	loc_y_e(t_game *game);
+int	loc_x_e(t_game *game);
+int	loc_y_p(t_game *game);
+int	loc_x_p(t_game *game);
+void	flood_fill2(t_game *game, int x, int y);
 
 #endif

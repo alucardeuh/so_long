@@ -35,42 +35,22 @@ void	init_var(t_game *game)
 int	erreur_init(t_game *game)
 {
 	if (!game->map)
-	{	
+	{
 		printf("erreur chargement\n");
 		mlx_destroy_display(game->mlx);
 		free(game->mlx);
 		free(game);
-		return (1);	
+		return (1);
 	}
 	if (!game->mlx)
 	{
-  		printf("Erreur initialisation MLX\n");
+		printf ("Erreur initialisation MLX\n");
 		free_map(game->map);
 		free(game);
 		return (1);
 	}
 	return (0);
 }
-
-/*int	count_horizontale(t_game *game)
-{
-	int		i;
-
-	i = 0;
-	while (game->map[0][i] != '\n' && game->map[0][i] != '\0')
-		i++;
-	return (i);
-}
-
-int	count_verticale(t_game *game)
-{
-	int		x;
-
-	x = 0;
-	while (game->map[0][x])
-		x++;
-	return (x);
-}*/
 
 int	verif_walls_cote(t_game *game)
 {
@@ -114,7 +94,7 @@ int	verif_map_c(t_game *game)
 	if (count <= 0)
 	{
 		printf("Erreur no collectible gros!!");
-		return (1);	
+		return (1);
 	}
 	return (0);
 }
@@ -126,7 +106,6 @@ int	verif_map_e(t_game *game)
 	int	x;
 
 	count = 0;
-	x = 0;
 	y = 0;
 	while (game->map[y])
 	{
@@ -141,8 +120,35 @@ int	verif_map_e(t_game *game)
 	}
 	if (count != 1)
 	{
-		printf("Erreur no exit");
-		return (1);	
+		printf ("Erreur no exit");
+		return (1);
+	}
+	return (0);
+}
+
+int	verif_map_p(t_game *game)
+{
+	int	y;
+	int	count;
+	int	x;
+
+	count = 0;
+	y = 0;
+	while (game->map[y])
+	{
+		x = 0;
+		while (x < game->largeur_map)
+		{
+			x++;
+			if (game->map[y][x] == 'P')
+				count++;
+		}
+		y++;
+	}
+	if (count != 1)
+	{
+		printf("Erreur no player");
+		return (1);
 	}
 	return (0);
 }
@@ -201,14 +207,14 @@ int	verif_rectangle(t_game *game)
 	if (i == o)
 	{
 		printf("map pas rectangulaire gros !");
-		return (1);	
+		return (1);
 	}
 	return (0);
 }
 
 int	verif_name(t_game *game)
 {
-	int	i;
+	int		i;
 	char	*str;
 
 	str = game->argv1;
@@ -246,6 +252,8 @@ int	verif_all(t_game *game)
 	if (erreur_init(game) == 1)
 		return (1);
 	if (verif_taille_lignes(game) == 1)
-		return(1);
+		return (1);
+	if (verif_chemin(game) == 1)
+		return (1);
 	return (0);
 }
