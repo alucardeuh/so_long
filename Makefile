@@ -13,7 +13,7 @@ OBJ = $(SRC:.c=.o)
 MLX_DIR = mlx
 MLX_LIB = $(MLX_DIR)/libmlx.a
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror #-g3 -fsanitize=address
 RM = rm -f
 
 # **************************************************************************** #
@@ -31,14 +31,12 @@ $(MLX_LIB):
 $(NAME): $(OBJ) $(MLX_LIB)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -Lmlx -lmlx -lXext -lX11 -lm
 
-clean:
+clean: 
 	$(RM) $(OBJ)
-	@make -C $(MLX_DIR) clean
 
 fclean: clean
 	$(RM) $(NAME)
-	@make -C $(MLX_DIR) fclean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+#.PHONY: all clean fclean re

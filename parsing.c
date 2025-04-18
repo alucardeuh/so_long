@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amalolla <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: pkarst <pkarst@student.42nice.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 16:16:14 by amalolla          #+#    #+#             */
-/*   Updated: 2025/04/12 16:16:15 by amalolla         ###   ########.fr       */
+/*   Updated: 2025/04/18 14:23:50 by pkarst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	erreur_init(t_game *game)
 	if (!game->mlx)
 	{
 		printf ("Erreur initialisation MLX\n");
-		free_map(game->map);
+		free_map(game->map, game);
 		free(game);
 		return (1);
 	}

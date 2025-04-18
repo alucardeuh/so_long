@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test5.c                                            :+:      :+:    :+:   */
+/*   so_long.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amalolla <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: pkarst <pkarst@student.42nice.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 19:46:14 by amalolla          #+#    #+#             */
-/*   Updated: 2025/04/05 19:46:15 by amalolla         ###   ########.fr       */
+/*   Updated: 2025/04/18 15:33:40 by pkarst           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,14 @@ int	count_collectible(char *ligne, t_game *game)
 	return (game->t);
 }
 
-void	free_map(char **map)
+void	free_map(char **map, t_game *game)
 {
 	int	i;
 
 	if (!map)
 		return ;
 	i = 0;
-	while (map[i])
+	while (i < game->hauteur_map)
 	{
 		free(map[i]);
 		i++;
@@ -111,7 +111,7 @@ char	**charger_carte(char *carte, t_game *game)
 	fd = open(carte, O_RDONLY);
 	if (fd < 0)
 	{
-		free_map(map);
+		free_map(map, game);
 		return (NULL);
 	}
 	read_map_lines(fd, map, game);
@@ -175,7 +175,7 @@ int	quitter(t_game *game)
 	}
 	if (game->map)
 	{
-		free_map(game->map);
+		free_map(game->map, game);
 		game->map = NULL;
 	}
 	free(game);
@@ -197,11 +197,18 @@ void	collectible(t_game *game, int x, int y)
 		mlx_put_image_to_window(game->mlx, game->win, game->img_exit, game->pos_x_exit * 64, game->pos_y_exit * 64); /* sinon l image exit apparait apres avoir reappuye sur une touche */
 }
 
-/*void	passer_niv_suivant(t_game *game)
+void	passer_niv_suivant(t_game *game, int level)
 {
 	int	y;
 
-	game->level++;
+	if (game->img_mur)
+		mlx_destroy_image(game->mlx, game->img_mur);
+	if (game->img_sol)
+		mlx_destroy_image(game->mlx, game->img_sol);
+	if (game->img_item)
+		mlx_destroy_image(game->mlx, game->img_item);
+	if (game->img_exit)
+		mlx_destroy_image(game->mlx, game->img_exit);
 	game->img_sol = mlx_xpm_file_to_image(game->mlx, "image/sol.xpm", &game->img_w, &game->img_h);
 	game->img_item = mlx_xpm_file_to_image(game->mlx, "image/item.xpm", &game->img_w, &game->img_h);
 	game->img_mur = mlx_xpm_file_to_image(game->mlx, "image/mur.xpm", &game->img_w, &game->img_h);
@@ -215,7 +222,7 @@ void	collectible(t_game *game, int x, int y)
 		{
 			if (game->map[y][x] == '0')
 			{
-				if ((x + y + game->level) % 5 == 0)
+				if ((x + y + level) % 5 == 0)
 				{
 					game->map[y][x] = 'C';
 					game->t++;
@@ -225,12 +232,55 @@ void	collectible(t_game *game, int x, int y)
 		}
 		y++;
 	}
-}*/
+}
+void	draw_background2(t_game *game)
+{
+	int	x;
+	int	y;
+
+	y = 0;
+	if (game->img_mur)
+		mlx_destroy_image(game->mlx, game->img_mur);
+	if (game->img_sol)
+		mlx_destroy_image(game->mlx, game->img_sol);
+	if (game->img_item)
+		mlx_destroy_image(game->mlx, game->img_item);
+	if (game->img_exit)
+		mlx_destroy_image(game->mlx, game->img_exit);
+	game->img_sol = mlx_xpm_file_to_image(game->mlx, "image/sol.xpm", &game->img_w, &game->img_h);
+	game->img_item = mlx_xpm_file_to_image(game->mlx, "image/item.xpm", &game->img_w, &game->img_h);
+	game->img_mur = mlx_xpm_file_to_image(game->mlx, "image/mur.xpm", &game->img_w, &game->img_h);
+	game->img_exit = mlx_xpm_file_to_image(game->mlx, "image/exit.xpm", &game->img_w, &game->img_h);
+	while (game->map[y])
+	{
+		x = 0;
+		while (game->map[y][x])
+		{
+			if (game->map[y][x] == '1')
+				mlx_put_image_to_window(game->mlx, game->win, game->img_mur, x * 64, y * 64);
+			else if (game->map[y][x] == '0')
+				mlx_put_image_to_window(game->mlx, game->win, game->img_sol, x * 64, y * 64);
+			else if (game->map[y][x] == 'C')
+				collectible(game, x, y);
+			if (game->map[y][x] == 'E')
+				mlx_put_image_to_window(game->mlx, game->win, game->img_sol, x * 64, y * 64);
+			else if (game->map[y][x] == 'P')
+			{
+				game->pos_x = x * 64;
+				game->pos_y = y * 64;
+				mlx_put_image_to_window(game->mlx, game->win, game->img_joueur, game->pos_x, game->pos_y);
+			}
+			x++;
+		}
+		y++;
+	}
+}
 
 void	draw_background(t_game *game)
 {
 	int	x;
 	int	y;
+	static int	level;
 
 	y = 0;
 	while (game->map[y])
@@ -248,12 +298,17 @@ void	draw_background(t_game *game)
 			{
 				game->pos_x_exit = x;
 				game->pos_y_exit = y;
-				if (game->t == 0)  /* apres avoir pris tous les collectibles, t = 0 car c est une volatile int */
+				if (game->t == 0) /* apres avoir pris tous les collectibles, t = 0 car c est une volatile int */
 				{
 					mlx_put_image_to_window(game->mlx, game->win, game->img_exit, x * 64, y * 64);
-					if (game->map[game->h / 64][x] == game->map[y][x] && game->map[y][game->l / 64] == game->map[y][x])
+					if (game->map[game->h / 64][x] == game->map[y][x] && game->map[y][game->l / 64] == game->map[y][x] && level < 2)
+					{
+						draw_background2(game);
+						passer_niv_suivant(game, level);
+						level++;
+					}
+					if (level >= 2)
 						quitter(game);
-						/*passer_niv_suivant(game);*/
 				}
 				else
 					mlx_put_image_to_window(game->mlx, game->win, game->img_sol, x * 64, y * 64);
@@ -287,13 +342,13 @@ int	handle_key(int keycode, void *param)
 	if (keycode == XK_Escape)
 		quitter(game);
 	else if (keycode == XK_w && (game->map[game->pos_y / 64 - 1][game->pos_x / 64] != '1')) /*si la map a l index [game->pos_y / 64 - 1][game->pos_x / 64] est differnet de 1 qui correspon a un mur*/
-		game->h = game->h - 64;
+	game->h = game->h - 64;
 	else if (keycode == XK_s && (game->map[game->pos_y / 64 + 1][game->pos_x / 64] != '1')) /* et on divise par 64 car c est l index et non les bits*/
-		game->h = game->h + 64;
+	game->h = game->h + 64;
 	else if (keycode == XK_a && (game->map[game->pos_y / 64][game->pos_x / 64 - 1] != '1'))
-		game->l = game->l - 64;
+	game->l = game->l - 64;
 	else if (keycode == XK_d && (game->map[game->pos_y / 64][game->pos_x / 64 + 1] != '1'))
-		game->l = game->l + 64;
+	game->l = game->l + 64;
 	mlx_clear_window(game->mlx, game->win);
 	if (game->pos_y != game->h || game->pos_x != game->l)
 		printf("total mouv : %d\n", ++game->move);
