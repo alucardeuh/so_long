@@ -104,9 +104,9 @@ int	count_coll(t_game *game)
 		x = 0;
 		while (x < game->largeur_map)
 		{
-			x++;
 			if (game->map[y][x] == 'C')
 				count++;
+			x++;
 		}
 		y++;
 	}
@@ -115,13 +115,15 @@ int	count_coll(t_game *game)
 
 void	flood_fill2(t_game *game, int x, int y)
 {
-	if (game->map[y][x] == '1' || game->map[y][x] == '0' )
+	if (game->map[y][x] == '1')
 		return ;
+
 	if (game->map[y][x] == 'R')
-	{
 		game->map[y][x] = 'C';
+	else if (game->map[y][x] == 'L')
+		game->map[y][x] = '0';
+	else
 		return ;
-	}
 	game->map[y][x] = '0';
 	flood_fill2(game, x + 1, y);
 	flood_fill2(game, x - 1, y);
@@ -134,15 +136,35 @@ void	flood_fill(t_game *game, int x, int y)
 	if (game->map[y][x] == '1' || game->map[y][x] == 'L' || game->map[y][x] == 'R')
 		return ;
 	if (game->map[y][x] == 'C')
-	{
 		game->map[y][x] = 'R';
-		return ;
-	}
-	game->map[y][x] = 'L';
+	else
+		game->map[y][x] = 'L';
 	flood_fill(game, x + 1, y);
 	flood_fill(game, x - 1, y);
 	flood_fill(game, x, y + 1);
 	flood_fill(game, x, y - 1);
+}
+
+int	compte_bien_gros(t_game *game)
+{
+	int	x;
+	int	y;
+	int	count;
+
+	count = 0;
+	y = 0;
+	while (game->map[y])
+	{
+		x = 0;
+		while (x < game->largeur_map)
+		{
+			if (game->map[y][x] == 'C')
+				count++;
+			x++;
+		}
+		y++;
+	}
+	return (count);
 }
 
 int	verif_chemin(t_game *game)
@@ -151,13 +173,15 @@ int	verif_chemin(t_game *game)
 	int	y;
 	int	x2;
 	int	y2;
+	int	count;
 
 	x2 = loc_x_e(game);
 	y2 = loc_y_e(game);
 	x = loc_x_p(game);
 	y = loc_y_p(game);
 	flood_fill(game, x, y);
-	if (game->map[y2][x2] != 'L')
+	count = compte_bien_gros(game);
+	if (game->map[y2][x2] != 'L' || count != 0)
 	{
 		printf("NO CHEMIN");
 		return (1);

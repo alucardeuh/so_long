@@ -13,7 +13,7 @@ OBJ = $(SRC:.c=.o)
 MLX_DIR = mlx
 MLX_LIB = $(MLX_DIR)/libmlx.a
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -g
 RM = rm -f
 
 # **************************************************************************** #

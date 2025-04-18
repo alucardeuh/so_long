@@ -43,7 +43,7 @@ void	free_map(char **map)
 	free(map);
 }
 
-int	count_char_map(const char *filename)
+int	count_char_map(char *filename)
 {
 	int		fd;
 	int		i;
@@ -307,13 +307,14 @@ int	handle_key(int keycode, void *param)
 
 int main(int argc, char **argv)
 {
-	t_game	*game = malloc(sizeof(t_game));
+	t_game	*game;
 
-	if (argc != 2)
+	if (argc != 2 || map_presente(argv[1]) == 1)
 	{
-		printf("ERREUR ARG GROS != 2");
+		printf("ERREUR ARG GROS (ou map)");
 		return (1);
 	}
+	game = malloc(sizeof(t_game));
 	init_var(game);
 	game->argv1 = argv[1];
 	if (!game)
@@ -323,7 +324,10 @@ int main(int argc, char **argv)
 	if (!game->mlx || !game->map)
 		erreur_init(game);
 	if (verif_all(game) == 1)
+	{
+		quitter(game);
 		return (0);
+	}
 	game->win = mlx_new_window(game->mlx, game->largeur_map * 64, game->hauteur_map * 64, "so_long");
 	charger_images(game);
 	draw_background(game);

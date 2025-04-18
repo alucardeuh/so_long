@@ -120,7 +120,7 @@ int	verif_map_e(t_game *game)
 	}
 	if (count != 1)
 	{
-		printf ("Erreur no exit");
+		printf ("Erreur exit");
 		return (1);
 	}
 	return (0);
@@ -231,6 +231,23 @@ int	verif_name(t_game *game)
 		return (1);
 	i++;
 	if (str[i] != 'r')
+		return (1);
+	if (str[++i])
+		return (1);
+	return (0);
+}
+
+int	map_presente(char *carte)
+{
+	int	fd;
+
+	if (!carte)
+	{
+		printf("no map");
+		return (1);
+	}
+	fd = open(carte, O_RDONLY);
+	if (fd < 0)
 		return (1);
 	return (0);
 }

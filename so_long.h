@@ -55,7 +55,7 @@ int	handle_key(int keycode, void *param);
 void	draw_background(t_game *game);
 int	erreur_init(t_game *game);
 void	init_var(t_game *game);
-int	count_char_map(const char *filename);
+int	count_char_map(char *filename);
 int	verif_map_c(t_game *game);
 int	verif_map_e(t_game *game);
 int	verif_walls_cote(t_game *game);
@@ -71,5 +71,7 @@ int	loc_x_e(t_game *game);
 int	loc_y_p(t_game *game);
 int	loc_x_p(t_game *game);
 void	flood_fill2(t_game *game, int x, int y);
+int	map_presente(char *carte);
+int	compte_bien_gros(t_game *game);
 
 #endif
