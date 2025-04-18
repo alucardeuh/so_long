@@ -251,8 +251,33 @@ int	map_presente(char *carte)
 	return (0);
 }
 
+int	bon_char(t_game *game)
+{
+	int	y;
+	int	x;
+
+	y = 0;
+	while (game->map[y])
+	{
+		x = 0;
+		while (x < game->largeur_map - 1)
+		{
+			if (game->map[y][x] != 'P' && game->map[y][x] != '0' && game->map[y][x] != 'C' && game->map[y][x] != 'E' && game->map[y][x] != '1')
+			{
+				printf("PAS LES BON CHAR");
+				return (1);
+			}
+			x++;
+		}
+		y++;
+	}
+	return (0);
+}
+
 int	verif_all(t_game *game)
 {
+	if (bon_char(game) == 1)
+		return (1);
 	if (verif_rectangle(game) == 1)
 		return (1);
 	if (verif_walls_haut(game) == 1)

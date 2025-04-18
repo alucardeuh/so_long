@@ -116,27 +116,6 @@ int	loc_y_e(t_game *game)
 	return (0);
 }
 
-int	count_coll(t_game *game)
-{
-	int	y;
-	int	count;
-	int	x;
-
-	count = 0;
-	y = 0;
-	while (game->map[y])
-	{
-		x = 0;
-		while (x < game->largeur_map)
-		{
-			if (game->map[y][x] == 'C')
-				count++;
-			x++;
-		}
-		y++;
-	}
-	return (count);
-}
 /*
 void	flood_fill2(t_game *game, int x, int y)
 {
