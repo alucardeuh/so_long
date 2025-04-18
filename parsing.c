@@ -30,6 +30,7 @@ void	init_var(t_game *game)
 	game->mlx = NULL;
 	game->win = NULL;
 	game->map = NULL;
+	game->level = 0;
 }
 
 int	erreur_init(t_game *game)
@@ -212,12 +213,10 @@ int	verif_rectangle(t_game *game)
 	return (0);
 }
 
-int	verif_name(t_game *game)
+int	verif_name(char *str)
 {
 	int		i;
-	char	*str;
 
-	str = game->argv1;
 	i = 0;
 	while (str[i] && str[i] != '.')
 		i++;
@@ -254,8 +253,6 @@ int	map_presente(char *carte)
 
 int	verif_all(t_game *game)
 {
-	if (verif_name(game) == 1)
-		return (1);
 	if (verif_rectangle(game) == 1)
 		return (1);
 	if (verif_walls_haut(game) == 1)

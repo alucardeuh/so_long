@@ -5,6 +5,7 @@
 NAME = so_long
 
 SRC = so_long.c \
+	   niveau2.c \
 	   floodfill.c \
 	   parsing.c \
 	   get_next_line/get_next_line.c \

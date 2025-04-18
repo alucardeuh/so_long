@@ -30,7 +30,6 @@ typedef struct s_game
 	void		*img_item;
 	void		*img_exit;
 	void		*img_joueur;
-	char		*argv1;
 	int			img_w;
 	int			img_h;
 	int			largeur_map;
@@ -43,6 +42,7 @@ typedef struct s_game
 	int			t;
 	int			pos_x_exit;
 	int			pos_y_exit;
+	int			level;
 } t_game;
 
 void	read_map_lines(int fd, char **map, t_game *game);
@@ -63,7 +63,7 @@ int	verif_map_e(t_game *game);
 int	verif_walls_cote(t_game *game);
 int	verif_walls_haut(t_game *game);
 int	verif_rectangle(t_game *game);
-int	verif_name(t_game *game);
+int	verif_name(char *str);
 int	verif_all(t_game *game);
 int	verif_taille_lignes(t_game *game);
 int	verif_chemin(t_game *game);
@@ -76,5 +76,11 @@ int	loc_x_p(t_game *game);
 int	map_presente(char *carte);
 int	compte_bien_gros(char **map_copy, t_game *game);
 void	draw_background(t_game *game);
+void	draw_background2(t_game *game);
+void	free_niveau(t_game *game);
+void	images_niv_2(t_game *game);
+void	images_niv_3(t_game *game);
+void	find_level(t_game *game);
+void	draw_background3(t_game *game);
 
 #endif

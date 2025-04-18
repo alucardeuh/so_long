@@ -197,22 +197,12 @@ void	collectible(t_game *game, int x, int y)
 		mlx_put_image_to_window(game->mlx, game->win, game->img_exit, game->pos_x_exit * 64, game->pos_y_exit * 64); /* sinon l image exit apparait apres avoir reappuye sur une touche */
 }
 
-void	passer_niv_suivant(t_game *game, int level)
+void	passer_niv_suivant(t_game *game)
 {
 	int	y;
 
-	if (game->img_mur)
-		mlx_destroy_image(game->mlx, game->img_mur);
-	if (game->img_sol)
-		mlx_destroy_image(game->mlx, game->img_sol);
-	if (game->img_item)
-		mlx_destroy_image(game->mlx, game->img_item);
-	if (game->img_exit)
-		mlx_destroy_image(game->mlx, game->img_exit);
-	game->img_sol = mlx_xpm_file_to_image(game->mlx, "image/sol.xpm", &game->img_w, &game->img_h);
-	game->img_item = mlx_xpm_file_to_image(game->mlx, "image/item.xpm", &game->img_w, &game->img_h);
-	game->img_mur = mlx_xpm_file_to_image(game->mlx, "image/mur.xpm", &game->img_w, &game->img_h);
-	game->img_exit = mlx_xpm_file_to_image(game->mlx, "image/exit.xpm", &game->img_w, &game->img_h);
+	free_niveau(game);
+	find_level(game);
 	game->t = 0;
 	y = 0;
 	while (game->map[y])
@@ -222,53 +212,11 @@ void	passer_niv_suivant(t_game *game, int level)
 		{
 			if (game->map[y][x] == '0')
 			{
-				if ((x + y + level) % 5 == 0)
+				if ((x + y + game->level) % 5 == 0)
 				{
 					game->map[y][x] = 'C';
 					game->t++;
 				}
-			}
-			x++;
-		}
-		y++;
-	}
-}
-void	draw_background2(t_game *game)
-{
-	int	x;
-	int	y;
-
-	y = 0;
-	if (game->img_mur)
-		mlx_destroy_image(game->mlx, game->img_mur);
-	if (game->img_sol)
-		mlx_destroy_image(game->mlx, game->img_sol);
-	if (game->img_item)
-		mlx_destroy_image(game->mlx, game->img_item);
-	if (game->img_exit)
-		mlx_destroy_image(game->mlx, game->img_exit);
-	game->img_sol = mlx_xpm_file_to_image(game->mlx, "image/sol.xpm", &game->img_w, &game->img_h);
-	game->img_item = mlx_xpm_file_to_image(game->mlx, "image/item.xpm", &game->img_w, &game->img_h);
-	game->img_mur = mlx_xpm_file_to_image(game->mlx, "image/mur.xpm", &game->img_w, &game->img_h);
-	game->img_exit = mlx_xpm_file_to_image(game->mlx, "image/exit.xpm", &game->img_w, &game->img_h);
-	while (game->map[y])
-	{
-		x = 0;
-		while (game->map[y][x])
-		{
-			if (game->map[y][x] == '1')
-				mlx_put_image_to_window(game->mlx, game->win, game->img_mur, x * 64, y * 64);
-			else if (game->map[y][x] == '0')
-				mlx_put_image_to_window(game->mlx, game->win, game->img_sol, x * 64, y * 64);
-			else if (game->map[y][x] == 'C')
-				collectible(game, x, y);
-			if (game->map[y][x] == 'E')
-				mlx_put_image_to_window(game->mlx, game->win, game->img_sol, x * 64, y * 64);
-			else if (game->map[y][x] == 'P')
-			{
-				game->pos_x = x * 64;
-				game->pos_y = y * 64;
-				mlx_put_image_to_window(game->mlx, game->win, game->img_joueur, game->pos_x, game->pos_y);
 			}
 			x++;
 		}
@@ -280,7 +228,6 @@ void	draw_background(t_game *game)
 {
 	int	x;
 	int	y;
-	static int	level;
 
 	y = 0;
 	while (game->map[y])
@@ -298,16 +245,18 @@ void	draw_background(t_game *game)
 			{
 				game->pos_x_exit = x;
 				game->pos_y_exit = y;
-				if (game->t == 0) /* apres avoir pris tous les collectibles, t = 0 car c est une volatile int */
+				if (game->t == 0)
 				{
 					mlx_put_image_to_window(game->mlx, game->win, game->img_exit, x * 64, y * 64);
-					if (game->map[game->h / 64][x] == game->map[y][x] && game->map[y][game->l / 64] == game->map[y][x] && level < 2)
+					if (game->map[game->h / 64][x] == game->map[y][x] && game->map[y][game->l / 64] == game->map[y][x] && ++game->level < 3)
 					{
-						draw_background2(game);
-						passer_niv_suivant(game, level);
-						level++;
+						if (game->level == 1)
+							draw_background2(game);
+						else
+							draw_background3(game);
+						passer_niv_suivant(game);
 					}
-					if (level >= 2)
+					else if (game->level >= 3 )
 						quitter(game);
 				}
 				else
@@ -371,13 +320,17 @@ int main(int argc, char **argv)
 	}
 	game = malloc(sizeof(t_game));
 	init_var(game);
-	game->argv1 = argv[1];
 	if (!game)
 		return (1);
 	game->mlx = mlx_init();
 	game->map = charger_carte(argv[1], game);
 	if (!game->mlx || !game->map)
 		erreur_init(game);
+	if (verif_name(argv[1]) == 1)
+	{
+		quitter(game);
+		return (0);
+	}	
 	if (verif_all(game) == 1)
 	{
 		quitter(game);
