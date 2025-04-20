@@ -119,53 +119,9 @@ char	**charger_carte(char *carte, t_game *game)
 	return (map);
 }
 
-/*char	**charger_carte(char *carte, t_game *game)
-{
-	int			i;
-	int			count;
-	int			fd;
-	char	**map;
-	char		*ligne;
-
-	i = 0;
-	count = count_char_map(carte);
-	map = malloc(sizeof(char*) * (count));
-	fd = open(carte, O_RDONLY);
-	ligne = get_next_line(fd);
-	if (fd < 0 || !map)
-		return NULL;
-	if (!ligne)
-	{
-		free(map);
-		close(fd);
-		return NULL;
-	}
-	game->largeur_map = strlen(ligne) - 1;
-	while (ligne)
-	{
-		map[i] = ligne;
-		i++;
-		count_collectible(ligne, game);
-		ligne = get_next_line(fd);
-	}
-	map[i] = NULL;
-	game->hauteur_map = i;
-	close(fd);
-	return (map);
-}*/
-
 int	quitter(t_game *game)
 {
-	if (game->img_mur)
-		mlx_destroy_image(game->mlx, game->img_mur);
-	if (game->img_sol)
-		mlx_destroy_image(game->mlx, game->img_sol);
-	if (game->img_item)
-		mlx_destroy_image(game->mlx, game->img_item);
-	if (game->img_exit)
-		mlx_destroy_image(game->mlx, game->img_exit);
-	if (game->img_joueur)
-		mlx_destroy_image(game->mlx, game->img_joueur);
+	free_niveau(game);
 	if (game->win)
 		mlx_destroy_window(game->mlx, game->win);
 	if (game->mlx)
@@ -194,12 +150,13 @@ void	collectible(t_game *game, int x, int y)
 	else
 		mlx_put_image_to_window(game->mlx, game->win, game->img_item, x * 64, y * 64);
 	if (game->t == 0)
-		mlx_put_image_to_window(game->mlx, game->win, game->img_exit, game->pos_x_exit * 64, game->pos_y_exit * 64); /* sinon l image exit apparait apres avoir reappuye sur une touche */
+		mlx_put_image_to_window(game->mlx, game->win, game->img_exit, game->pos_x_exit * 64, game->pos_y_exit * 64);
 }
 
 void	passer_niv_suivant(t_game *game)
 {
 	int	y;
+	int	x;
 
 	free_niveau(game);
 	find_level(game);
@@ -207,12 +164,12 @@ void	passer_niv_suivant(t_game *game)
 	y = 0;
 	while (game->map[y])
 	{
-		int x = 0;
+		x = 0;
 		while (game->map[y][x])
 		{
 			if (game->map[y][x] == '0')
 			{
-				if ((x + y + game->level) % 5 == 0)
+				if ((x + y*y + game->level) % 5 == 0)
 				{
 					game->map[y][x] = 'C';
 					game->t++;
@@ -222,6 +179,39 @@ void	passer_niv_suivant(t_game *game)
 		}
 		y++;
 	}
+	printf("%p\n", &x);
+}
+
+void	call_exit(t_game *game, int x, int y)
+{
+	if (game->map[y][x] == 'E')	
+	{
+		game->pos_x_exit = x;
+		game->pos_y_exit = y;
+		if (game->t == 0)
+		{
+			mlx_put_image_to_window(game->mlx, game->win, game->img_exit, x * 64, y * 64);
+			if (game->map[game->h / 64][x] == game->map[y][x] && game->map[y][game->l / 64] == game->map[y][x] && ++game->level < 3)
+			{
+				if (game->level == 1)
+					draw_background2(game);
+				else
+					draw_background3(game);
+				passer_niv_suivant(game);
+			}
+			else if (game->level >= 3)
+				quitter(game);
+		}
+		else
+			mlx_put_image_to_window(game->mlx, game->win, game->img_sol, x * 64, y * 64);
+	}
+}
+
+void	find_pos_p(t_game *game, int x, int y)
+{
+	game->pos_x = x * 64;
+	game->pos_y = y * 64;
+	mlx_put_image_to_window(game->mlx, game->win, game->img_joueur, game->pos_x, game->pos_y);
 }
 
 void	draw_background(t_game *game)
@@ -241,33 +231,9 @@ void	draw_background(t_game *game)
 				mlx_put_image_to_window(game->mlx, game->win, game->img_sol, x * 64, y * 64);
 			else if (game->map[y][x] == 'C')
 				collectible(game, x, y);
-			if (game->map[y][x] == 'E')	
-			{
-				game->pos_x_exit = x;
-				game->pos_y_exit = y;
-				if (game->t == 0)
-				{
-					mlx_put_image_to_window(game->mlx, game->win, game->img_exit, x * 64, y * 64);
-					if (game->map[game->h / 64][x] == game->map[y][x] && game->map[y][game->l / 64] == game->map[y][x] && ++game->level < 3)
-					{
-						if (game->level == 1)
-							draw_background2(game);
-						else
-							draw_background3(game);
-						passer_niv_suivant(game);
-					}
-					else if (game->level >= 3 )
-						quitter(game);
-				}
-				else
-					mlx_put_image_to_window(game->mlx, game->win, game->img_sol, x * 64, y * 64);
-			}
-			else if (game->map[y][x] == 'P')
-			{
-				game->pos_x = x * 64;
-				game->pos_y = y * 64;
-				mlx_put_image_to_window(game->mlx, game->win, game->img_joueur, game->pos_x, game->pos_y);
-			}
+			call_exit(game, x, y);
+			if (game->map[y][x] == 'P')
+				find_pos_p(game, x, y);
 			x++;
 		}
 		y++;
@@ -290,9 +256,9 @@ int	handle_key(int keycode, void *param)
 	game->l = game->pos_x;
 	if (keycode == XK_Escape)
 		quitter(game);
-	else if (keycode == XK_w && (game->map[game->pos_y / 64 - 1][game->pos_x / 64] != '1')) /*si la map a l index [game->pos_y / 64 - 1][game->pos_x / 64] est differnet de 1 qui correspon a un mur*/
+	else if (keycode == XK_w && (game->map[game->pos_y / 64 - 1][game->pos_x / 64] != '1'))
 	game->h = game->h - 64;
-	else if (keycode == XK_s && (game->map[game->pos_y / 64 + 1][game->pos_x / 64] != '1')) /* et on divise par 64 car c est l index et non les bits*/
+	else if (keycode == XK_s && (game->map[game->pos_y / 64 + 1][game->pos_x / 64] != '1'))
 	game->h = game->h + 64;
 	else if (keycode == XK_a && (game->map[game->pos_y / 64][game->pos_x / 64 - 1] != '1'))
 	game->l = game->l - 64;
@@ -326,16 +292,8 @@ int main(int argc, char **argv)
 	game->map = charger_carte(argv[1], game);
 	if (!game->mlx || !game->map)
 		erreur_init(game);
-	if (verif_name(argv[1]) == 1)
-	{
-		quitter(game);
+	if (appel_verif(game, argv[1]) == 1)
 		return (0);
-	}	
-	if (verif_all(game) == 1)
-	{
-		quitter(game);
-		return (0);
-	}
 	game->win = mlx_new_window(game->mlx, game->largeur_map * 64, game->hauteur_map * 64, "so_long");
 	charger_images(game);
 	draw_background(game);

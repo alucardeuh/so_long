@@ -170,6 +170,11 @@ int	verif_taille_lignes(t_game *game)
 		}
 		y++;
 	}
+	if (game->hauteur_map == game->largeur_map)
+	{
+		printf("map pas rectangulaire gros !");
+		return (1);
+	}
 	return (0);
 }
 
@@ -193,21 +198,6 @@ int	verif_walls_haut(t_game *game)
 	if (x != game->largeur_map)
 	{
 		printf("%s", "Probleme de mur horizontal");
-		return (1);
-	}
-	return (0);
-}
-
-int	verif_rectangle(t_game *game)
-{
-	int	i;
-	int	o;
-
-	i = game->hauteur_map;
-	o = game->largeur_map;
-	if (i == o)
-	{
-		printf("map pas rectangulaire gros !");
 		return (1);
 	}
 	return (0);
@@ -274,11 +264,24 @@ int	bon_char(t_game *game)
 	return (0);
 }
 
+int	appel_verif(t_game *game, char *str)
+{
+	if (verif_name(str) == 1)
+	{
+		quitter(game);
+		return (1);
+	}	
+	if (verif_all(game) == 1)
+	{
+		quitter(game);
+		return (1);
+	}
+	return (0);
+}
+
 int	verif_all(t_game *game)
 {
 	if (bon_char(game) == 1)
-		return (1);
-	if (verif_rectangle(game) == 1)
 		return (1);
 	if (verif_walls_haut(game) == 1)
 		return (1);

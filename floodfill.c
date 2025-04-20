@@ -116,25 +116,6 @@ int	loc_y_e(t_game *game)
 	return (0);
 }
 
-/*
-void	flood_fill2(t_game *game, int x, int y)
-{
-	if (game->map[y][x] == '1')
-		return ;
-
-	if (game->map[y][x] == 'R')
-		game->map[y][x] = 'C';
-	else if (game->map[y][x] == 'L')
-		game->map[y][x] = '0';
-	else
-		return ;
-	game->map[y][x] = '0';
-	flood_fill2(game, x + 1, y);
-	flood_fill2(game, x - 1, y);
-	flood_fill2(game, x, y + 1);
-	flood_fill2(game, x, y - 1);
-}*/
-
 void	flood_fill(char **map_copy, int x, int y)
 {
 	if (map_copy[y][x] == '1' || map_copy[y][x] == 'L' || map_copy[y][x] == 'R')
@@ -153,9 +134,7 @@ int	compte_bien_gros(char **map_copy, t_game *game)
 {
 	int	x;
 	int	y;
-	int	count;
 
-	count = 0;
 	y = 0;
 	while (y < game->hauteur_map)
 	{
@@ -163,12 +142,12 @@ int	compte_bien_gros(char **map_copy, t_game *game)
 		while (x < game->largeur_map)
 		{
 			if (map_copy[y][x] == 'C')
-				count++;
+				return (1);
 			x++;
 		}
 		y++;
 	}
-	return (count);
+	return (0);
 }
 
 int	verif_chemin(t_game *game)

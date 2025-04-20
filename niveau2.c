@@ -75,11 +75,7 @@ void	draw_background3(t_game *game)
 			if (game->map[y][x] == 'E')
 				mlx_put_image_to_window(game->mlx, game->win, game->img_sol, x * 64, y * 64);
 			else if (game->map[y][x] == 'P')
-			{
-				game->pos_x = x * 64;
-				game->pos_y = y * 64;
-				mlx_put_image_to_window(game->mlx, game->win, game->img_joueur, game->pos_x, game->pos_y);
-			}
+				find_pos_p(game, x, y);
 			x++;
 		}
 		y++;
@@ -108,11 +104,7 @@ void	draw_background2(t_game *game)
 			if (game->map[y][x] == 'E')
 				mlx_put_image_to_window(game->mlx, game->win, game->img_sol, x * 64, y * 64);
 			else if (game->map[y][x] == 'P')
-			{
-				game->pos_x = x * 64;
-				game->pos_y = y * 64;
-				mlx_put_image_to_window(game->mlx, game->win, game->img_joueur, game->pos_x, game->pos_y);
-			}
+				find_pos_p(game, x, y);
 			x++;
 		}
 		y++;

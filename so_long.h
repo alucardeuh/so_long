@@ -62,7 +62,6 @@ int	verif_map_c(t_game *game);
 int	verif_map_e(t_game *game);
 int	verif_walls_cote(t_game *game);
 int	verif_walls_haut(t_game *game);
-int	verif_rectangle(t_game *game);
 int	verif_name(char *str);
 int	verif_all(t_game *game);
 int	verif_taille_lignes(t_game *game);
@@ -72,7 +71,6 @@ int	loc_y_e(t_game *game);
 int	loc_x_e(t_game *game);
 int	loc_y_p(t_game *game);
 int	loc_x_p(t_game *game);
-//void	flood_fill2(t_game *game, int x, int y);
 int	map_presente(char *carte);
 int	compte_bien_gros(char **map_copy, t_game *game);
 void	draw_background(t_game *game);
@@ -82,5 +80,8 @@ void	images_niv_2(t_game *game);
 void	images_niv_3(t_game *game);
 void	find_level(t_game *game);
 void	draw_background3(t_game *game);
+int	appel_verif(t_game *game, char *str);
+void	call_exit(t_game *game, int x, int y);
+void	find_pos_p(t_game *game, int x, int y);
 
 #endif
