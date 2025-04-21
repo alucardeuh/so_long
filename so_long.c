@@ -12,15 +12,18 @@
 
 #include "so_long.h"
 
+static void	ft_putstr(char *str)
+{
+	while (*str)
+		write(1, str++, 1);
+}
+
 int	main(int argc, char **argv)
 {
 	t_game	*g;
 
 	if (argc != 2 || map_presente(argv[1]) == 1)
-	{
-		printf("ERREUR ARG GROS (ou map)");
-		return (1);
-	}
+		return (ft_putstr("Erreur Arg ou map"), 1);
 	g = malloc(sizeof(t_game));
 	init_var(g);
 	if (!g)

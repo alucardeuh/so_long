@@ -62,13 +62,26 @@ char	*ft_itoa(int n)
 	return (new_str);
 }
 
-void	find_pos_p(t_game *game, int x, int y)
+void	find_pos_p(t_game *g, int x, int y)
 {
-	game->px = x * 64;
-	game->py = y * 64;
-	mlx_put_image_to_window(game->mlx, game->win, game->ij, game->px, game->py);
-	if (game->m != 0)
-		mlx_put_image_to_window(game->mlx, game->win, game->is, game->px, game->py);
+	char	*str;
+
+	str = ft_itoa(g->m);
+	if (str == NULL)
+		return ;
+	if (g->py != g->h || g->px != g->l)
+		put_count(g);
+	else
+	{
+		mlx_string_put(g->mlx, g->win, 10, 10, 0xFFFFFF, "Moves:");
+		mlx_string_put(g->mlx, g->win, 70, 10, 0xFFA500, str);
+	}
+	g->px = x * 64;
+	g->py = y * 64;
+	mlx_put_image_to_window(g->mlx, g->win, g->ij, g->px, g->py);
+	if (g->m != 0)
+		mlx_put_image_to_window(g->mlx, g->win, g->is, g->px, g->py);
+	free(str);
 }
 
 void	put_count(t_game *game)
@@ -77,6 +90,8 @@ void	put_count(t_game *game)
 
 	game->m++;
 	str = ft_itoa(game->m);
+	if (str == NULL)
+		return ;
 	mlx_string_put(game->mlx, game->win, 10, 10, 0xFFFFFF, "Moves:");
 	mlx_string_put(game->mlx, game->win, 70, 10, 0xFFA500, str);
 	free(str);

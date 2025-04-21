@@ -31,8 +31,6 @@ int	handle_key(int keycode, void *param)
 	else if (keycode == XK_d && (g->map[g->py / 64][g->px / 64 + 1] != '1'))
 		g->l = g->l + 64;
 	mlx_clear_window(g->mlx, g->win);
-	if (g->py != g->h || g->px != g->l)
-		put_count(g);
 	draw_background(g);
 	find_image_directions(keycode, g);
 	mlx_put_image_to_window(g->mlx, g->win, g->is, g->px, g->py);
