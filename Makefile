@@ -5,9 +5,20 @@
 NAME = so_long
 
 SRC = so_long.c \
-	   niveau2.c \
-	   floodfill.c \
+	   collectibles.c \
+	   exit_process.c \
+	   free_functions.c \
+	   generate_map.c \
+	   handle_key.c \
+	   next_levels.c \
+	   parsing_init.c \
+	   parsing_verifs.c \
 	   parsing.c \
+	   render_graphics.c \
+	   utils.c \
+	   levels_directions.c \
+	   floodfill_global.c \
+	   floodfill_loc.c \
 	   get_next_line/get_next_line.c \
 	   get_next_line/get_next_line_utils.c
 OBJ = $(SRC:.c=.o)
